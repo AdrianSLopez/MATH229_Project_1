@@ -1,10 +1,9 @@
 import pandas as pd
 from datascience import *
-import matplotlib
 import numpy as np
-import matplotlib.pyplot as plt
-matplotlib.use('MacOSX')
-
+import matplotlib
+from matplotlib import pyplot as plt
+matplotlib.use('TkAgg')
 
 def yearFrom(dates):
     relabeledDates = []
@@ -46,7 +45,13 @@ except:
 
 # Display plots for BEVs, PHEVS, FCEVs, and Total of ZEVs using matplotlib w/ MacOSX
 print('displaying plots...')
-data_ZEV.plot('Data Year', 'Total # of Zero Emission Vehicles (ZEVs) per year')
-data_gas_yearly_average.plot('Year', 'Gas Price mean')
+# plt.scatter(data_ZEV.column('Data Year'), data_ZEV.column('Total # of Zero Emission Vehicles (ZEVs) per year'))
+# plt.xlabel('Year')
+# plt.ylabel('Zero Emission Vehicle(s)')
+# plt.title('Number of ZEV per year')
+
+plt.scatter(data_gas_yearly_average.column('Year'), data_gas_yearly_average.column('Gas Price mean'))
+plt.title('Gas Price Per Year')
+plt.xlabel('Year')
+plt.ylabel('$ Gas Price')
 plt.show()
-    

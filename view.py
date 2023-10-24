@@ -5,6 +5,18 @@ import matplotlib
 from matplotlib import pyplot as plt
 matplotlib.use('TkAgg')
 
+from collections import OrderedDict
+from datetime import datetime
+
+def sort_dict_by_date(the_dict, date_format):
+    # Python dicts do not hold their ordering so we need to make it an
+    # ordered dict, after sorting.
+    return OrderedDict(sorted(
+            the_dict.items(),
+            key=lambda x: datetime.strptime(x[0], date_format)
+        ))
+
+
 def yearFrom(dates):
     relabeledDates = []
 

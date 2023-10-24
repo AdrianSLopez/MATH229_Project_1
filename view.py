@@ -15,13 +15,12 @@ def yearFrom(dates):
     return relabeledDates
 
 # ELECTRIC VEHICLE DATA
-data_ev_raw = Table.read_table('Data/Vehicle_Population_Last_updated_04-28-2023_ada.csv')
-data_ev_raw = data_ev_raw.where('County', are.equal_to("Los Angeles")).drop('Dashboard Fuel Type Group', 'County', 'Make', 'Model').group(['Data Year', 'Fuel Type'], sum)
-data_BEV = data_ev_raw.where('Fuel Type', are.equal_to('Battery Electric (BEV)')).group(['Data Year', 'Fuel Type'], sum)
-data_PHEV = data_ev_raw.where('Fuel Type', are.equal_to('Plug-in Hybrid (PHEV)')).group(['Data Year', 'Fuel Type'], sum)
-data_FCEV = data_ev_raw.where('Fuel Type', are.equal_to('Fuel Cell (FCEV)')).group(['Data Year', 'Fuel Type'], sum)
-data_ZEV = data_BEV.join('Data Year', data_PHEV).join('Data Year', data_FCEV).drop('Fuel Type', 'Fuel Type_2', 'Fuel Type_3').relabel('Number of Vehicles sum sum', '# of BEVs').relabel('Number of Vehicles sum sum_2', '# of PHEVs').relabel('Number of Vehicles sum sum_3', '# of FCEVs')
-data_ZEV = data_ZEV.with_column('Total # of Zero Emission Vehicles (ZEVs) per year', data_ZEV.column('# of BEVs')+data_ZEV.column('# of PHEVs')+data_ZEV.column('# of FCEVs'))
+data_ev_raw = Table.read_table('Data/Vehicle_Population_Last_updated_04-28-2023_ada.csv').where('County', are.equal_to("Los Angeles")).drop('Dashboard Fuel Type Group', 'County', 'Make', 'Model').group(['Data Year', 'Fuel Type'], sum).relabel('Data Year', 'Year').relabel('Number of Vehicles sum', '# of vehicles')
+data_BEV = data_ev_raw.where('Fuel Type', are.equal_to('Battery Electric (BEV)')).group(['Year', 'Fuel Type'], sum).drop('Fuel Type').relabel('# of vehicles sum', '# of BEV')
+data_PHEV = data_ev_raw.where('Fuel Type', are.equal_to('Plug-in Hybrid (PHEV)')).group(['Year', 'Fuel Type'], sum).drop('Fuel Type').relabel('# of vehicles sum', '# of PHEV')
+data_FCEV = data_ev_raw.where('Fuel Type', are.equal_to('Fuel Cell (FCEV)')).group(['Year', 'Fuel Type'], sum).drop('Fuel Type').relabel('# of vehicles sum', '# of FCEV')
+data_ZEV = data_BEV.join('Year', data_PHEV).join('Year', data_FCEV)
+data_ZEV = data_ZEV.with_column('# of ZEV', data_ZEV.column('# of BEV')+data_ZEV.column('# of PHEV')+data_ZEV.column('# of FCEV'))
 
 #GAS PRICES DATA
 data_gas_raw = Table.read_table('Data/Weekly_Los_Angeles_Regular_All_Formulations_Retail_Gasoline_Prices.csv')

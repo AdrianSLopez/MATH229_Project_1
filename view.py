@@ -26,6 +26,14 @@ def yearFrom(dates):
     
     return relabeledDates
 
+def joinDateGasPriceTogether(dates, prices):
+    sortedPrices = {}
+
+    for i in range(len(dates)):
+        sortedPrices[dates[i]] = prices[i]
+    
+    return sortedPrices
+
 # ELECTRIC VEHICLE DATA
 data_ev_raw = Table.read_table('Data/Vehicle_Population_Last_updated_04-28-2023_ada.csv').where('County', are.equal_to("Los Angeles")).drop('Dashboard Fuel Type Group', 'County', 'Make', 'Model').group(['Data Year', 'Fuel Type'], sum).relabel('Data Year', 'Year').relabel('Number of Vehicles sum', '# of vehicles')
 data_BEV = data_ev_raw.where('Fuel Type', are.equal_to('Battery Electric (BEV)')).group(['Year', 'Fuel Type'], sum).drop('Fuel Type').relabel('# of vehicles sum', '# of BEV')

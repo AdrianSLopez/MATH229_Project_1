@@ -46,7 +46,11 @@ data_ZEV = data_ZEV.with_column('# of ZEV', data_ZEV.column('# of BEV')+data_ZEV
 #GAS PRICES DATA
 data_gas_raw = Table.read_table('Weekly_Los_Angeles_Regular_All_Formulations_Retail_Gasoline_Prices.csv')
 data_gas_yearly_average = data_gas_raw.relabel('Weekly Los Angeles Regular All Formulations Retail Gasoline Prices Dollars per Gallon', '$ per gallon').with_column('Year', yearFrom(data_gas_raw.column('Week of'))).group('Year', np.mean).drop('Week of mean').move_to_start('Year').where('Year', are.above_or_equal_to(2010)).where('Year', are.below_or_equal_to(2022)).relabel('$ per gallon mean', '$ per gallon average')
-
+sorted_raw_gas_prices = sort_dict_by_date(joinDateGasPriceTogether(data_gas_raw.column('Week of'), data_gas_raw.column('$ per gallon')), '%m/%d/%Y')
+table_sorted_raw_gas_prices = Table().with_columns(
+    'Date', sorted_raw_gas_prices.keys(),
+    '$ per gallon', sorted_raw_gas_prices.values()
+)
 # create html version of data
 pre_html = "<!DOCTYPE html>\n <html> \n<head> \n <style> \n .fixTableHead { \n overflow-y: auto;  \n  height: 750px; \n} \n .fixTableHead thead th { \n  position: sticky;     \n   top: 0;     \n }     \n table {     \n   border-collapse: collapse;             \n   width: 100%;     \n }     \n th,    \n  td {     \n   padding: 8px 15px;    \n   border: 2px solid #529432;     \n }    \n th {     \n   background: #ABDD93;     \n } \n   </style> \n </head> \n <body>   \n <h1 style='text-align: center;'>Los Angeles's Number of Zero Emission Vehicles (ZEV) 2010-2022</h1> <a href='https://www.energy.ca.gov/data-reports/energy-almanac/zero-emission-vehicle-and-infrastructure-statistics/new-zev-sales'> <p style='text-align: center;'> source </p> </a>"
 post_html = "\n</body>  \n</html>"

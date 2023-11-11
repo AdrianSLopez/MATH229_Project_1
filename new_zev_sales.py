@@ -4,6 +4,8 @@ import numpy as np
 import statistics as s
 import matplotlib
 from matplotlib import pyplot as plt
+import plotly.express as px
+
 matplotlib.use('MacOSX')
 
 from collections import OrderedDict
@@ -54,31 +56,49 @@ vehicle_makes = uniqueMakes(make_LA_sales.column('MAKE'))
 table_for_every_make1 = []
 
 for make in vehicle_makes:
-    table_for_every_make1.append(make_LA_sales.where('MAKE', make).relabel('Number of Vehicles sum', make+' purchased').drop('MAKE'))
+    table_for_every_make1.append(make_LA_sales.where('MAKE', make).relabel('Number of Vehicles sum', make).drop('MAKE'))
 
-# for loop to create table for all vehicle make, then add NA for missing years for each table, then display all in one line graph
+
+#  Given an array of continous years between 2010 to 2022, return an array from 2010 to 2022
+
+# get lower number and find missing years between 2010 to lowest year
+# get highest year and find missing years between highest year to highest year
+
 
 table_for_every_make2 = []
+# fill in data gaps outside of filled data
 for table in table_for_every_make1:
-    if len(table.column('Data Year')) != 13:
-        years_left = 13- len(table.column(0))
-        add_years = []
-        add_purchase = []
+    if len(table.column(0)) != 13:
+        pre_years = []
+        pre_purchase = []
 
-        for year in range(1, years_left):
-            add_years.append(2009+year)
+        for i in range(2010, table.column('Data Year')[0]):
+            pre_years.append(i)
+            pre_purchase.append(0)
 
-        for p in add_years:
-            add_purchase.append(0)
+        for i in range(len(table.column(0))):
+            pre_years.append(table.column(0)[i])
+            pre_purchase.append(table.column(1)[i])
 
-        for year in table.column(0):
-            add_years.append(year)
+        for post_year in range(table.column(0)[len(table.column(0))-1]+1, 2023):
+            pre_years.append(post_year)
+            pre_purchase.append(0)
+ 
+        table_for_every_make2.append(Table().with_columns('Data Year', pre_years, table.labels[1], pre_purchase))
 
-        for purchase in table.column(1):
-            add_purchase.append(purchase)
 
-        table_for_every_make2.append(Table().with_columns('Data Year', add_years, table.labels[1], add_purchase))
+# fill in data gaps in between data (Mistubishi, MINI, SMART) 
+# CHECKPOINT CHECKPOINT CHECKPOINT CHECKPOINT CHECKPOINT
+for table in table_for_every_make2:
+    if len(table.column(0)) != 13:
+        
+        i = 0
+        j = i+1
 
+        while j < 12:
+            if
+        # iterate through years
+        # once consecutive years break save start broken year and topbroken year
 
 
 # CREATE HTML TABLE OF DATA
@@ -102,8 +122,18 @@ except:
 
 # DISPLAY PLOTS USING MacOSX on mac and TkAgg on Windows
 print('displaying plot(s)...')
-# data_new_zev_sales_LA.scatter('Year', '# of EVs purchased')
+# data_new_zev_sales_LA_all.scatter(data_new_zev_sales_LA_all.labels[0], data_new_zev_sales_LA_all.labels[2])
+# print(data_new_zev_sales_LA_all.labels)
 
-plt.title('New Electric Vehicles purchased per year in Los Angeles 2010-2022 ')
-plt.grid(color='grey', linestyle = '--', linewidth=0.4)
+# graph error
+
+# print(table_for_every_make2[0].labels)
+
+newFig = px.scatter(table_for_every_make2[0].to_df(), x="Data Year", y=table_for_every_make2[0].labels[1]).update_traces(mode="lines+markers")
+# for i in range(1, len(table_for_every_make2)):
+#     newFig.add_scatter(table_for_every_make2[i].to_df(),  color=table_for_every_make2[i].labels[1])
+
+newFig.show()
+# plt.title('New Electric Vehicles purchased per year in Los Angeles 2010-2022 ')
+# plt.grid(color='grey', linestyle = '--', linewidth=0.4)
 # plt.show()
